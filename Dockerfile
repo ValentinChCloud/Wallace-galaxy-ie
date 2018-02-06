@@ -12,7 +12,8 @@ RUN echo "force-unsafe-io" > /etc/dpkg/dpkg.cfg.d/02apt-speedup && \
     R CMD javareconf && \
     Rscript -e "install.packages('wallace')" && \
     # Bash script to check traffic
-    mkdir /srv/shiny-server/sample-apps/SIG
+    mkdir /srv/shiny-server/sample-apps/SIG && \
+    mkdir -p /opt/python/galaxy-export
 
 # Wallace stuff
 ADD ./wallace/inst/ /srv/shiny-server/sample-apps/SIG/wallace/
@@ -31,6 +32,6 @@ COPY ./shiny-server.conf /etc/shiny-server/shiny-server.conf
 COPY shiny-server.sh /usr/bin/shiny-server.sh
 
 # Python script to export data to history Galaxy
-COPY ./export.py /var/log/shiny-server/export.py
+COPY ./export.py /opt/python/galaxy-export/export.py
 
 CMD ["/usr/bin/shiny-server.sh"]

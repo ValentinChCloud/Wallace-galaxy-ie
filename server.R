@@ -209,8 +209,8 @@ shinyServer(function(input, output, session) {
   
   # handle downloading of original GBIF records after cleaning
   observeEvent(input$dw,{
-  write.csv(rvs$occsOrig, file ="/var/log/shiny-server/foo.csv",row.names=FALSE)
-  system('python /var/log/shiny-server/export.py /var/log/shiny-server/foo.csv')
+  write.csv(rvs$occsOrig, file ="/var/log/shiny-server/occsOrig.csv",row.names=FALSE)
+  system('python /opt/python/galaxy-export/export.py  /var/log/shiny-server/occsOrig.csv')
   })  
 
   output$dlDbOccs <- downloadHandler(
