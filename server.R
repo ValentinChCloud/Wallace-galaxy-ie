@@ -208,7 +208,7 @@ shinyServer(function(input, output, session) {
   }, rownames = FALSE)
   
   # handle downloading of original GBIF records after cleaning
-  observeEvent(input$dw,{
+  observeEvent(input$goDbOccs_G,{
   write.csv(rvs$occsOrig, file ="/var/log/shiny-server/occsOrig.csv",row.names=FALSE)
   system('python /opt/python/galaxy-export/export.py  /var/log/shiny-server/occsOrig.csv')
   })  
@@ -279,6 +279,10 @@ shinyServer(function(input, output, session) {
   })
   
   # handle download for thinned records csv
+  observeEvent(input$dlProcOccs_G,{
+  write.csv(rvs$occs, file ="/var/log/shiny-server/occs.csv",row.names=FALSE)
+  system('python /opt/python/galaxy-export/export.py  /var/log/shiny-server/occs.csv')
+  }) 
   output$dlProcOccs <- downloadHandler(
     filename = function() {paste0(formatSpName(spName()), "_processed_occs.csv")},
     content = function(file) {
