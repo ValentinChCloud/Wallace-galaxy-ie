@@ -1,4 +1,4 @@
-FROM valentinchdock/docker-wallace:1.0.3
+FROM valentinchdock/docker-wallace:1.0.4
 # Installing packages needed for check traffic on the container and kill if none
 
 RUN echo "force-unsafe-io" > /etc/dpkg/dpkg.cfg.d/02apt-speedup && \
