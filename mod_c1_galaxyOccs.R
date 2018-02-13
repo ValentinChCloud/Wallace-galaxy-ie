@@ -1,6 +1,6 @@
 galaxyOccs_UI <- function(id) {
   ns <- NS(id)
-  python.load("/x.py")
+  python.load("/import_list_history.py")
   x <- python.call("x")
   v<-list()
   l<-length(x)
