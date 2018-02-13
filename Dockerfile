@@ -26,9 +26,11 @@ COPY shiny-server.sh /usr/bin/shiny-server.sh
 COPY ./export.py /opt/python/galaxy-export/export.py
 
 
-# TEMP python import
+# TEMP python import, dirty for the moment
 COPY ./__init__.py /usr/local/lib/python2.7/dist-packages/galaxy_ie_helpers/__init__.py
 COPY ./import_list_history.py /import_list_history.py
 COPY ./global.r /srv/shiny-server/sample-apps/SIG/wallace/shiny/
+COPY ./import_csv_user.py /import_csv_user.py
+
 RUN apt-get install -y vim
 CMD ["/usr/bin/shiny-server.sh"]

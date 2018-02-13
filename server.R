@@ -202,7 +202,22 @@ shinyServer(function(input, output, session) {
       zoom2Occs(rvs$occs)
     shinyjs::disable("dlDbOccs")
   })
-  
+ # module Galaxy User Data
+ galaxyOccs<- callModule(galaxyOccs_MOD, 'c1_galaxyOccs', rvs)
+
+  observeEvent(input$goGalaxyOccs, {
+    rvs$occs <- galaxyOccs()
+    rvs$occsPreProc <- rvs$occs
+    # record for RMD
+    rvs$comp1 <- 'csv'
+    map %>%
+      clearMarkers() %>%
+      clearShapes() %>%
+      clearImages() %>%
+      map_plotLocs(rvs$occs) %>%
+      zoom2Occs(rvs$occs)
+     shinyjs::disable("dlDbOccs")
+       }) 
   # TABLE
   options <- list(autoWidth = TRUE, columnDefs = list(list(width = '40%', targets = 7)),
                   scrollX=TRUE, scrollY=400)

@@ -55,11 +55,11 @@ shinyUI(tagList(
                                                                  HTML('<hr>'),
                                                                  div('Module Developers: Jamie M. Kass, Bruno Vilela, Robert P. Anderson', id="pkgDes")
                                                 ),
-                                                conditionalPanel("input.occsSel == 'galaxy'",
+                                                conditionalPanel("input.occSel == 'galaxy'",
                                                                  div('Module: Galaxy History User', id="mod"),
                                                                  HTML('<hr>'),
                                                                  galaxyOccs_UI('c1_galaxyOccs'),
-                                                                 actionButton("goUserOccs", "Load Occurrences"),
+                                                                 actionButton("goGalaxyOccs", "Load Occurrences"),
                                                                  HTML('<hr>'),
                                                                  div('Module Developers: Jamie M. Kass, Bruno Vilela, Robert P. Anderson', id="pkgDes")
                                                 )
