@@ -32,7 +32,7 @@ shinyUI(tagList(
                                conditionalPanel("input.tabs == 1",
                                                 h4("Obtain Occurrence Data"),
                                                 radioButtons("occSel", "Modules Available:",
-                                                             choices = list("Query Database" = 'db', "User-specified" = 'user'),
+                                                             choices = list("Query Database" = 'db', "User-specified" = 'user', "Galaxy History User" = 'galaxy'),
                                                              selected = 'db'),
                                                 HTML('<hr>'),
                                                 conditionalPanel("input.occSel == 'db'",
@@ -52,6 +52,14 @@ shinyUI(tagList(
                                                                  div('Module: User-specified Occurrences', id="mod"),
                                                                  HTML('<hr>'),
                                                                  userOccs_UI('c1_userOccs'),
+                                                                 actionButton("goUserOccs", "Load Occurrences"),
+                                                                 HTML('<hr>'),
+                                                                 div('Module Developers: Jamie M. Kass, Bruno Vilela, Robert P. Anderson', id="pkgDes")
+                                                ),
+                                                conditionalPanel("input.occsSel == 'galaxy'",
+                                                                 div('Module: Galaxy History User', id="mod"),
+                                                                 HTML('<hr>'),
+                                                                 galaxyOccs_UI('c1_galaxyOccs'),
                                                                  actionButton("goUserOccs", "Load Occurrences"),
                                                                  HTML('<hr>'),
                                                                  div('Module Developers: Jamie M. Kass, Bruno Vilela, Robert P. Anderson', id="pkgDes")

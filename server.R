@@ -67,6 +67,7 @@ shinyServer(function(input, output, session) {
       gtext$cur_comp <- 'gtext_comp1.Rmd'
       if (input$occSel == 'db') gtext$cur_mod <- "gtext_comp1_dbOccs.Rmd"
       if (input$occSel == 'user') gtext$cur_mod <- "gtext_comp1_userOccs.Rmd"
+      if (input$occSel == 'galaxy') gtext$cur_mod <- "gtext_comp1_galaxyOccs.Rmd"
     }
     if (input$tabs == 2) {
       updateTabsetPanel(session, 'main', selected = 'Map')
@@ -207,12 +208,13 @@ shinyServer(function(input, output, session) {
     occsDT %>% dplyr::select(name, occID, longitude:basisOfRecord)
   }, rownames = FALSE)
   
-  # handle downloading of original GBIF records after cleaning
+  # Galaxy export gofDbOccs_G, occurence first element 
   observeEvent(input$goDbOccs_G,{
   write.csv(rvs$occsOrig, file ="/var/log/shiny-server/occsOrig.csv",row.names=FALSE)
   system('python /opt/python/galaxy-export/export.py  /var/log/shiny-server/occsOrig.csv')
   })  
 
+  # handle downloading of original GBIF records after cleaning
   output$dlDbOccs <- downloadHandler(
     filename = function() {paste0(formatSpName(spName()), '_original_', rvs$occDb, ".csv")},
     content = function(file) {
