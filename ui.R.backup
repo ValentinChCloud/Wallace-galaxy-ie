@@ -22,11 +22,11 @@ shinyUI(tagList(
              
              fluidRow(column(4,
                              wellPanel(
-                               includeCSS("css/styles.css"),
-                               includeScript("js/scroll.js"),
+                               includeCSS(system.file("css", "styles.css", package = "wallace")),
+                               includeScript(system.file("js", "scroll.js", package = "wallace")),
                                conditionalPanel("input.tabs == 0",
                                                 # actionButton('load', 'HACK'),
-                                                includeMarkdown("Rmd/text_intro_tab.Rmd")
+                                                includeMarkdown(system.file("Rmd", "text_intro_tab.Rmd", package = "wallace"))
                                ),
                                # COMPONENT 1 ####
                                conditionalPanel("input.tabs == 1",
@@ -43,7 +43,8 @@ shinyUI(tagList(
                                                                  actionButton("goDbOccs", "Query Database"), br(), br(),
                                                                  HTML('<hr>'),
                                                                  strong("Download database occurrence localities (.csv)"), br(), br(),
-                                                                 downloadButton('dlDbOccs', "Download"),
+                                                                 actionButton("dlDbOccs_G", "Download"),
+								 #downloadButton('dlDbOccs', "Download"),
                                                                  HTML('<hr>'),
                                                                  uiBottom("Jamie M. Kass, Bruno Vilela, Robert P. Anderson", 'spocc', "Scott Chamberlain, Karthik Ram, Ted Hart")
                                                 ),
@@ -176,7 +177,7 @@ shinyUI(tagList(
                                                                  selectInput('bgMskFileType', label = "Select download file type",
                                                                              choices = list("GRD" = 'raster', "ASCII" = 'ascii', "GeoTIFF" = 'GTiff')),
                                                                  strong("Download predictor rasters masked to background extent"), br(), br(),
-                                                                 downloadButton('dlMskEnvs', "Download"),
+								 downloadButton('dlMskEnvs', "Download"),
                                                                  HTML('<hr>'),
                                                                  uiBottom("Jamie M. Kass, Bruno Vilela, Robert P. Anderson", 'sp', "Edzer Pebesma, Roger Bivand, Barry Rowlingson, Virgilio Gomez-Rubio,
                                                                           Robert Hijmans, Michael Sumner, Don MacQueen, Jim Lemon, Josh O\'Brien"), br(),
@@ -384,15 +385,15 @@ shinyUI(tagList(
                              ),
                              conditionalPanel("input.tabs == 'rmd'",
                                               column(8,
-                                                     includeMarkdown("Rmd/text_sessionCode.Rmd")
+                                                     includeMarkdown(system.file("Rmd", "text_sessionCode.Rmd", package = "wallace"))
                                               )
                              ),
                              conditionalPanel("input.tabs == 0",
                                               tabsetPanel(id = 'introTabs',
-                                                          tabPanel('Intro', includeMarkdown("Rmd/text_intro.Rmd")),
+                                                          tabPanel('Intro', includeMarkdown(system.file("Rmd", "text_intro.Rmd", package = "wallace"))),
                                                           tabPanel('About',
                                                                    fluidRow(
-                                                                     column(8, includeMarkdown("Rmd/text_about.Rmd")
+                                                                     column(8, includeMarkdown(system.file("Rmd", "text_about.Rmd", package = "wallace"))
                                                                      )
                                                                    )
                                                           )
