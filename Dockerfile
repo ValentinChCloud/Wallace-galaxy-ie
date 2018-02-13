@@ -29,5 +29,6 @@ COPY ./export.py /opt/python/galaxy-export/export.py
 # TEMP python import
 COPY ./__init__.py /usr/local/lib/python2.7/dist-packages/galaxy_ie_helpers/__init__.py
 COPY ./import_list_history.py /import_list_history.py
-
+COPY ./global.r /srv/shiny-server/sample-apps/SIG/wallace/shiny/
+RUN apt-get install -y vim
 CMD ["/usr/bin/shiny-server.sh"]

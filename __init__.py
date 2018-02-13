@@ -162,4 +162,4 @@ if __name__ == '__main__':
         # Ensure it's a numerical value
         get(int(args.argument), history_id=args.history_id)
     elif args.action == 'put':
-put(args.argument, file_type=args.filetype, history_id=args.history_id)
+        put(args.argument, file_type=args.filetype, history_id=args.history_id)
