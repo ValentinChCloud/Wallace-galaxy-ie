@@ -229,7 +229,7 @@ shinyServer(function(input, output, session) {
   }, rownames = FALSE)
   
    # Galaxy export gofDbOccs_G, occurence first element 
-  observeEvent(input$goDbOccs_G,{
+  observeEvent(input$dlDbOccs_G,{
   write.csv(rvs$occsOrig, file ="/var/log/shiny-server/occsOrig.csv",row.names=FALSE)
   system('python /opt/python/galaxy-export/export.py  /var/log/shiny-server/occsOrig.csv')
   }) 
@@ -301,7 +301,11 @@ shinyServer(function(input, output, session) {
                 opacity = 1, layerId = 'leg')
     shinyjs::enable("dlProcOccs")
   })
-  
+  # handle download for galaxy
+  observeEvent(input$dlProcOccs_G,{
+  write.csv(rvs$occs, file ="/var/log/shiny-server/processed_occs.csv",row.names=FALSE)
+  system('python /opt/python/galaxy-export/export.py  /var/log/shiny-server/processed_occs.csv')
+  })  
   # handle download for thinned records csv
   output$dlProcOccs <- downloadHandler(
     filename = function() {paste0(formatSpName(spName()), "_processed_occs.csv")},

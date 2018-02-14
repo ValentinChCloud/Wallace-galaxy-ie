@@ -43,6 +43,7 @@ shinyUI(tagList(
                                                                  actionButton("goDbOccs", "Query Database"), br(), br(),
                                                                  HTML('<hr>'),
                                                                  strong("Download database occurrence localities (.csv)"), br(), br(),
+                                                                 actionButton('dlDbOccs_G', "Get in Galaxy"),
                                                                  downloadButton('dlDbOccs', "Download"),
                                                                  HTML('<hr>'),
                                                                  uiBottom("Jamie M. Kass, Bruno Vilela, Robert P. Anderson", 'spocc', "Scott Chamberlain, Karthik Ram, Ted Hart")
@@ -101,8 +102,8 @@ shinyUI(tagList(
                                                 actionButton("goResetOccs", "Reset"),
                                                 HTML('<hr>'),
                                                 strong("Download processed occurrence localities (.csv)"), br(), br(),
-                                                actionButton('dlProcOccs_G', "Download"),
-                                                #downloadButton('dlProcOccs', "Download"),
+						actionButton('dlProcOccs_G', "Get in Galaxy"),
+                                                downloadButton('dlProcOccs', "Download"),
                                                 HTML('<hr>'),
                                                 conditionalPanel("input.procOccSel == 'selOccs'",
                                                                  uiBottom("Jamie M. Kass, Robert P. Anderson", 'leaflet.extras', 'Bhaskar Karambelkar, Bangyou Zheng')),
