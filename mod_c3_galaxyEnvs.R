@@ -3,7 +3,11 @@ galaxyEnvs_UI <- function(id) {
   python.load("/import_list_history.py")
   x <- python.call("x")
   v<-list()
-  l<-length(x)
+  # This one is a tricky one, if history contain many dataset, x is gonna be a list of list
+  # But in the case where there is only one dataset, x will be just a list.
+  # So I test the first element of the list, if it's a another list it will be a lenght more than 1
+  # else it's an element of the list, and length will be 1 
+  l<-length(x[[1]])
   if(l==1) {
             name<-paste(x$'hid',x$'name')
             id<-unname(x$'hid')
