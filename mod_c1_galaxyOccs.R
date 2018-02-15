@@ -4,6 +4,14 @@ galaxyOccs_UI <- function(id) {
   x <- python.call("x")
   v<-list()
   l<-length(x)
+  if(l==1) {
+     if(x$'extension' == 'csv'){
+            name<-paste(x$'hid',x$'name')
+            id<-unname(x$'hid')
+            v[[name]]<-id
+        }
+
+  }
   for (y in 1:l) {
         if(x[[y]]$'extension' == 'csv'){
             name<-paste(x[[y]]$'hid',x[[y]]$'name')
