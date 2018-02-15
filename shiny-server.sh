@@ -4,7 +4,7 @@
 mkdir -p /var/log/shiny-server
 chown shiny.shiny /var/log/shiny-server
 chown shiny.shiny /import
-chown shiny.shiny /srv/shiny-server/sample-apps/SIG/wallace/shiny
+chown -R shiny.shiny /srv/shiny-server/sample-apps/SIG/wallace/shiny
 chmod +x /monitor_traffic.sh
 exec /monitor_traffic.sh &
 

@@ -14,8 +14,7 @@ galaxyEnvs_UI <- function(id) {
             v[[name]]<-id
 
   }else {
-
-
+  l<-length(x)
   for (y in 1:l) {
         name<-paste(x[[y]]$'hid',x[[y]]$'name')
         id<-unname(x[[y]]$'hid')

@@ -17,6 +17,7 @@ galaxyOccs_UI <- function(id) {
         }
 
   }else{
+  l<-length(x)
   for (y in 1:l) {
         if(x[[y]]$'extension' == 'csv'){
             name<-paste(x[[y]]$'hid',x[[y]]$'name')
