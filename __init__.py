@@ -145,7 +145,7 @@ def history_user (history_id=None):
     history_id = history_id or os.environ['HISTORY_ID']
     gi = get_galaxy_connection(history_id=history_id, obj=False)
     hc = HistoryClient(gi)
-    history = hc.show_history(history_id, visible=True, contents=True)
+    history = hc.show_history(history_id, deleted=False, contents=True)
     return history
 
 

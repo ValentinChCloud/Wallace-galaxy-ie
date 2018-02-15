@@ -11,7 +11,7 @@ galaxyOccs_UI <- function(id) {
             v[[name]]<-id
         }
 
-  }
+  }else {
   for (y in 1:l) {
         if(x[[y]]$'extension' == 'csv'){
             name<-paste(x[[y]]$'hid',x[[y]]$'name')
@@ -25,6 +25,7 @@ galaxyOccs_UI <- function(id) {
                 choices = v))
          )
 
+  }
   }
 galaxyOccs_MOD <- function(input, output, session, rvs) {
 

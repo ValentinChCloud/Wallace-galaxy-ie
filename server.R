@@ -84,6 +84,7 @@ shinyServer(function(input, output, session) {
       gtext$cur_comp <- "gtext_comp3.Rmd"
       if (input$envDataSel == 'wcbc') gtext$cur_mod <- "gtext_comp3_worldclim.Rmd"
       if (input$envDataSel == 'user') gtext$cur_mod <- "gtext_comp3_userEnvs.Rmd"
+      if (input$envDataSel == 'galaxy') gtext$cur_mod <- "gtext_comp3_galaxyEnvs.Rmd"
     }
     if (input$tabs == 4) {
       updateTabsetPanel(session, 'main', selected = 'Map')
@@ -376,7 +377,25 @@ shinyServer(function(input, output, session) {
     # switch to Results tab
     updateTabsetPanel(session, 'main', selected = 'Results')
   })
-  
+
+  galaxyEnvs <- callModule(galaxyEnvs_MOD, 'c3_galaxyEnvs', rvs)
+
+  observeEvent(input$goGalaxyrEnvs, {
+    rvs$envs <- galaxyEnvs()
+    req(rvs$occs)
+
+    rvs$comp3 <- 'galaxy'
+   
+    rvs$occs <- remEnvsValsNa(rvs)
+
+    
+    updateRadioButtons(session, "projSel", 
+                       choices = list("Project to New Extent" = 'projArea',
+				      "Calculate Environmental Similarity" = 'mess'))
+
+   
+    updateTabsetPanel(session, 'main', selected = 'Results')
+  }) 
   output$envsPrint <- renderPrint({
     req(rvs$envs)
     rvs$envs

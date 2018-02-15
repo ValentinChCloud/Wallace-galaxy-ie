@@ -16,8 +16,13 @@ RUN echo "force-unsafe-io" > /etc/dpkg/dpkg.cfg.d/02apt-speedup && \
 # Adapt download function to export to history Galaxy
 COPY ./ui.R /srv/shiny-server/sample-apps/SIG/wallace/shiny/ui.R
 COPY ./server.R /srv/shiny-server/sample-apps/SIG/wallace/shiny/server.R
+# Component 1
 COPY ./gtext_comp1_galaxyOccs.Rmd /srv/shiny-server/sample-apps/SIG/wallace/shiny/Rmd/gtext_comp1_galaxyOccs.Rmd
 COPY ./mod_c1_galaxyOccs.R /srv/shiny-server/sample-apps/SIG/wallace/shiny/modules/mod_c1_galaxyOccs.R
+
+# Component 3
+COPY ./gtext_comp3_galaxyEnvs.Rmd /srv/shiny-server/sample-apps/SIG/wallace/shiny/Rmd/gtext_comp3_galaxyEnvs.Rmd
+COPY ./mod_c3_galaxyEnvs.R /srv/shiny-server/sample-apps/SIG/wallace/shiny/modules/mod_c3_galaxyEnvs.R
 
 
 # Bash script to lauch all process needed

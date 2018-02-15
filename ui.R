@@ -119,7 +119,7 @@ shinyUI(tagList(
                                                 h4("Obtain Environmental Data"),
                                                 radioButtons("envDataSel", "Modules Available:",
                                                              choices = list("WorldClim Bioclims" = 'wcbc',
-                                                                            "User-specified" = 'user')),
+                                                                            "User-specified" = 'user', "Galaxy History User" = 'galaxy')),
                                                 HTML('<hr>'),
                                                 conditionalPanel("input.envDataSel == 'wcbc'",
                                                                  div('Module: WorldClim Bioclims', id="mod"),
@@ -135,6 +135,12 @@ shinyUI(tagList(
                                                                  HTML('<hr>'),
                                                                  userEnvs_UI('c3_userEnvs'),
                                                                  actionButton('goUserEnvs', 'Load Env Data')
+                                                ),
+						conditionalPanel("input.envDataSel == 'galaxy'",
+                                                                 div('Module: Galaxy-dataset-specified Environmental Data', id="mod"),
+                                                                 HTML('<hr>'),
+                                                                 galaxyEnvs_UI('c3_galaxyEnvs'),
+                                                                 actionButton('goGalaxyEnvs', 'Load Env Data')
                                                 ),
                                                 # br(), br(),
                                                 # strong("Download environmental predictors"), br(), br(),
