@@ -489,6 +489,7 @@ shinyServer(function(input, output, session) {
       }
       zip(zipfile="/var/log/shiny-server/dlMskEnvs.zip", files=fs)
       system('python /opt/python/galaxy-export/export.py /var/log/shiny-server/dlMskEnvs.zip zip')
+      
   }) 	
   # handle download for masked predictors, with file type as user choice
   output$dlMskEnvs <- downloadHandler(
@@ -742,6 +743,32 @@ shinyServer(function(input, output, session) {
     shinyjs::enable("dlPred")
   })
   
+  # download for model predictions (restricted to background extent)
+# download for model predictions (restricted to background extent)
+  observeEvent(input$dlPred_G,{
+  ext <- switch(input$predFileType, raster = 'grd', ascii = 'asc', GTiff = 'tif', PNG = 'png')
+  paste0(names(rvs$predCur), '.', ext)
+  filename<-paste0(names(rvs$predCur), '.', ext)
+  file_path<-paste0("/var/log/shiny-server/",filename)
+  if (input$predFileType == 'png') {
+  png(file=file_path)
+  raster::image(rvs$predCur)
+  dev.off()
+  command<-paste("python /opt/python/galaxy-export/export.py",file_path,"auto")
+  }else if (input$predFileType == 'raster') {
+  fileName <- names(rvs$predCur)
+  tmpdir <- tempdir()
+  raster::writeRaster(rvs$predCur, file.path(tmpdir, fileName), format = input$predFileType, overwrite = TRUE)
+  fs <- file.path(tmpdir, paste0(fileName, c('.grd', '.gri')))
+  zip_name<-paste0("/var/log/shiny-server/",gsub(" ", "_",fileName,fixed = TRUE),".zip")
+  zip(zipfile=zip_name, files=fs, extras= '-j')
+  command<-paste("python /opt/python/galaxy-export/export.py",zip_name,"zip")
+  }else {
+   r <- raster::writeRaster(rvs$predCur, file=file_path, format = input$predFileType, overwrite = TRUE)
+   command<-paste("python /opt/python/galaxy-export/export.py",file_path,"auto")
+  }
+  system(command)
+  })
   # download for model predictions (restricted to background extent)
   output$dlPred <- downloadHandler(
     filename = function() {

@@ -26,7 +26,7 @@ bcPlots_MOD <- function(input, output, session, rvs) {
     
     # handle downloads for BIOCLIM Plots png
     observeEvent(input$dlBcPlot_G, {
-      png_name <- paste0("/var/log/shiny-server/",qsub(" ","_",spName(),fixed=TRUE),"_bc_plot.png")
+      png_name <- paste0("/var/log/shiny-server/",gsub(" ","_",spName(),fixed = TRUE),"_bc_plot.png")
       png(file=png_name)
       bc.plot(rvs$mods[[1]], a = input$bc1, b = input$bc2, p = input$bcProb)
       dev.off()
