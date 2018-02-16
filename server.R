@@ -232,7 +232,7 @@ shinyServer(function(input, output, session) {
    # Galaxy export gofDbOccs_G, occurence first element 
   observeEvent(input$dlDbOccs_G,{
   write.csv(rvs$occsOrig, file ="/var/log/shiny-server/occsOrig.csv",row.names=FALSE)
-  system('python /opt/python/galaxy-export/export.py  /var/log/shiny-server/occsOrig.csv')
+  system('python /opt/python/galaxy-export/export.py  /var/log/shiny-server/occsOrig.csv csv')
   }) 
 
 
@@ -305,7 +305,7 @@ shinyServer(function(input, output, session) {
   # handle download for galaxy
   observeEvent(input$dlProcOccs_G,{
   write.csv(rvs$occs, file ="/var/log/shiny-server/processed_occs.csv",row.names=FALSE)
-  system('python /opt/python/galaxy-export/export.py  /var/log/shiny-server/processed_occs.csv')
+  system('python /opt/python/galaxy-export/export.py  /var/log/shiny-server/processed_occs.csv csv')
   })  
   # handle download for thinned records csv
   output$dlProcOccs <- downloadHandler(
@@ -469,6 +469,27 @@ shinyServer(function(input, output, session) {
     shinyjs::enable('dlMskEnvs')
   })
   
+  
+ 
+ 
+  # handle Upload in Galaxy for masked predictors, with file type as user choice
+   observeEvent(input$dlMskEnvs_G,{
+  tmpdir <- tempdir()
+      setwd(tempdir())
+      type <- input$bgMskFileType
+      nm <- names(rvs$bgMsk)
+
+      raster::writeRaster(rvs$bgMsk, file.path(tmpdir, 'msk'), bylayer = TRUE,
+                          suffix = nm, format = type, overwrite = TRUE)
+      ext <- switch(type, raster = 'grd', ascii = 'asc', GTiff = 'tif')
+
+      fs <- paste0('msk_', nm, '.', ext)
+      if (ext == 'grd') {
+        fs <- c(fs, paste0('msk_', nm, '.gri'))
+      }
+      zip(zipfile="/var/log/shiny-server/dlMskEnvs.zip", files=fs)
+      system('python /opt/python/galaxy-export/export.py /var/log/shiny-server/dlMskEnvs.zip zip')
+  }) 	
   # handle download for masked predictors, with file type as user choice
   output$dlMskEnvs <- downloadHandler(
     filename = function() {'mskEnvs.zip'},
@@ -521,6 +542,16 @@ shinyServer(function(input, output, session) {
     shinyjs::enable("dlPart")
   })
   
+  # download for partitioned occurrence records csv
+  observeEvent(input$dlPart_G, {
+       bg.bind <- data.frame(rep('background', nrow(rvs$bgPts)), rvs$bgPts)
+      names(bg.bind) <- c('name', 'longitude', 'latitude')
+      occs.bg.bind <-rbind(rvs$occs[,1:3], bg.bind)
+      all.bind <- cbind(occs.bg.bind, c(rvs$occsGrp, rvs$bgGrp))
+      names(all.bind)[4] <- "group"
+      write.csv(all.bind, file= "/var/log/shiny-server/_partitioned_occs.csv", row.names = FALSE)
+      system('python /opt/python/galaxy-export/export.py /var/log/shiny-server/_partitioned_occs.csv csv')
+  })
   # download for partitioned occurrence records csv
   output$dlPart <- downloadHandler(
     filename = function() paste0(spName(), "_partitioned_occs.csv"),
