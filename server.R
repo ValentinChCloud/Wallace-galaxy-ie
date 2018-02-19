@@ -231,8 +231,11 @@ shinyServer(function(input, output, session) {
   
    # Galaxy export gofDbOccs_G, occurence first element 
   observeEvent(input$dlDbOccs_G,{
-  write.csv(rvs$occsOrig, file ="/var/log/shiny-server/occsOrig.csv",row.names=FALSE)
-  system('python /opt/python/galaxy-export/export.py  /var/log/shiny-server/occsOrig.csv csv')
+  owd <- setwd(tempdir())
+  on.exit(setwd(owd))
+  write.csv(rvs$occsOrig, file = 'tmpfile.csv' ,row.names=FALSE)
+  command<-paste('python /opt/python/galaxy-export/export.py','tmpfile.csv','csv') 
+  system(command)
   }) 
 
 
@@ -950,14 +953,19 @@ shinyServer(function(input, output, session) {
         out <- rmarkdown::render('userReport2.Rmd', rmarkdown::md_document(variant="markdown_github"))
         writeLines(gsub('``` r', '```{r}', readLines(out)), 'userReport3.Rmd')
         out <- 'userReport3.Rmd'
+        command<-paste("python /opt/python/galaxy-export/export.py",'userReport3.Rmd','auto')
+
       } else {
         out <- rmarkdown::render('userReport2.Rmd', 
                                  switch(input$rmdFileType,
                                         PDF = rmarkdown::pdf_document(latex_engine='xelatex'), 
                                         HTML = rmarkdown::html_document(), 
                                         Word = rmarkdown::word_document())
-        )
+         )
+         command<-paste("python /opt/python/galaxy-export/export.py",'userReport2.Rmd','auto')
+        
       }
+      system(command)
       file.rename(out, file)
     }
   )
