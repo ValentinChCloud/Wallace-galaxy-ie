@@ -23,7 +23,9 @@ COPY ./modules/mod_c1_galaxyOccs.R /srv/shiny-server/sample-apps/SIG/wallace/shi
 # Component 3
 COPY ./Rmd/gtext_comp3_galaxyEnvs.Rmd /srv/shiny-server/sample-apps/SIG/wallace/shiny/Rmd/gtext_comp3_galaxyEnvs.Rmd
 COPY ./modules/mod_c3_galaxyEnvs.R /srv/shiny-server/sample-apps/SIG/wallace/shiny/modules/mod_c3_galaxyEnvs.R
-
+# Component 4
+COPY ./modules/mod_c4_galaxyBgExtend.R /srv/shiny-server/sample-apps/SIG/wallace/shiny/modules/mod_c4_galaxyBgExtend.R
+COPY ./Rmd/gtext_comp4_galaxyBg.Rmd /srv/shiny-server/sample-apps/SIG/wallace/shiny/Rmd/gtext_comp4_galaxyBg.Rmd
 #Component 7
 COPY ./modules/mod_c7_bcPlots.R /srv/shiny-server/sample-apps/SIG/wallace/shiny/modules/mod_c7_bcPlots.R
 COPY ./modules/mod_c7_mxEvalPlots.R /srv/shiny-server/sample-apps/SIG/wallace/shiny/modules/mod_c7_mxEvalPlots.R

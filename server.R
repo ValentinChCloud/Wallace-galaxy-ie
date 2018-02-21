@@ -91,7 +91,7 @@ shinyServer(function(input, output, session) {
       gtext$cur_comp <- "gtext_comp4.Rmd"
       if (input$envProcSel == 'bgSel') gtext$cur_mod <- "gtext_comp4_backg.Rmd"
       if (input$envProcSel == 'bgUser') gtext$cur_mod <- "gtext_comp4_userBg.Rmd"
-      
+      if (input$envProcSel == 'galaxy') gtext$cur_mod <- "gtext_comp4_galaxyBg.Rmd"     
     }
     if (input$tabs == 5) {
       updateTabsetPanel(session, 'main', selected = 'Map')
@@ -448,7 +448,25 @@ shinyServer(function(input, output, session) {
     map %>%
       fitBounds(rvs$bgShp@bbox[1], rvs$bgShp@bbox[2], rvs$bgShp@bbox[3], rvs$bgShp@bbox[4])
   })
-  
+  # module Galaxy History User Background Extend
+  galaxyBg <- callModule(galaxyBgExtent_MOD, 'c4_galaxyBgExtent', rvs)
+
+  observeEvent(input$goGalaxyBg, {
+    rvs$bgShp <- galaxyBg()
+    # stop if no environmental variables
+    req(rvs$envs)
+    req(rvs$bgShp)
+    coords <- rvs$bgShp@polygons[[1]]@Polygons[[1]]@coords
+    map %>% clearShapes()
+    for (shp in bgShpXY()) {
+      map %>%
+        addPolygons(lng=shp[,1], lat=shp[,2],
+                    weight=4, color="gray", group='bgShp')
+    }
+    map %>%
+      fitBounds(rvs$bgShp@bbox[1], rvs$bgShp@bbox[2], rvs$bgShp@bbox[3], rvs$bgShp@bbox[4])
+  })
+
   # module User-defined Background Extent
   userBg <- callModule(userBgExtent_MOD, 'c4_userBgExtent', rvs)
   
