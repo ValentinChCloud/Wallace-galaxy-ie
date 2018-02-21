@@ -12,7 +12,7 @@ RUN echo "force-unsafe-io" > /etc/dpkg/dpkg.cfg.d/02apt-speedup && \
     # Bash script to check traffic
     mkdir -p /opt/python/galaxy-export
 
-
+RUN apt-get update && apt-get install -y texlive-xetex
 # Adapt download function to export to history Galaxy
 COPY ./ui.R /srv/shiny-server/sample-apps/SIG/wallace/shiny/ui.R
 COPY ./server.R /srv/shiny-server/sample-apps/SIG/wallace/shiny/server.R
@@ -26,6 +26,8 @@ COPY ./modules/mod_c3_galaxyEnvs.R /srv/shiny-server/sample-apps/SIG/wallace/shi
 
 #Component 7
 COPY ./modules/mod_c7_bcPlots.R /srv/shiny-server/sample-apps/SIG/wallace/shiny/modules/mod_c7_bcPlots.R
+COPY ./modules/mod_c7_mxEvalPlots.R /srv/shiny-server/sample-apps/SIG/wallace/shiny/modules/mod_c7_mxEvalPlots.R
+COPY ./modules/mod_c7_resPlots.R /srv/shiny-server/sample-apps/SIG/wallace/shiny/modules/mod_c7_resPlots.R
 # Bash script to lauch all process needed
 COPY shiny-server.sh /usr/bin/shiny-server.sh
 # Python script to export data to history Galaxy

@@ -231,10 +231,13 @@ shinyServer(function(input, output, session) {
   
    # Galaxy export gofDbOccs_G, occurence first element 
   observeEvent(input$dlDbOccs_G,{
+  name=paste0(formatSpName(spName()),'_original_', rvs$occDb,".csv")
+  filename<-gsub(" ","_",name,fixed = TRUE)
+
   owd <- setwd(tempdir())
   on.exit(setwd(owd))
-  write.csv(rvs$occsOrig, file = 'tmpfile.csv' ,row.names=FALSE)
-  command<-paste('python /opt/python/galaxy-export/export.py','tmpfile.csv','csv') 
+  write.csv(rvs$occsOrig, file = filename ,row.names=FALSE)
+  command<-paste('python /opt/python/galaxy-export/export.py',filename,'csv') 
   system(command)
   }) 
 
@@ -307,9 +310,13 @@ shinyServer(function(input, output, session) {
   })
   # handle download for galaxy
   observeEvent(input$dlProcOccs_G,{
-  write.csv(rvs$occs, file ="/var/log/shiny-server/processed_occs.csv",row.names=FALSE)
-  system('python /opt/python/galaxy-export/export.py  /var/log/shiny-server/processed_occs.csv csv')
-  })  
+  owd <- setwd(tempdir())
+  on.exit(setwd(owd))
+  filename<-paste0(formatSpName(spName()), "_processed_occs.csv")
+  write.csv(rvs$occs, file =filename,row.names=FALSE)
+  command<-paste('python /opt/python/galaxy-export/export.py',filename,'csv') 
+  system(command)
+  })
   # handle download for thinned records csv
   output$dlProcOccs <- downloadHandler(
     filename = function() {paste0(formatSpName(spName()), "_processed_occs.csv")},
@@ -476,24 +483,26 @@ shinyServer(function(input, output, session) {
  
  
   # handle Upload in Galaxy for masked predictors, with file type as user choice
-   observeEvent(input$dlMskEnvs_G,{
-  tmpdir <- tempdir()
-      setwd(tempdir())
-      type <- input$bgMskFileType
-      nm <- names(rvs$bgMsk)
+    observeEvent(input$dlMskEnvs_G,{
+    tmpdir<-tempdir()
+    owd <- setwd(tmpdir)
+    on.exit(setwd(owd))
+   
+    type <- input$bgMskFileType
+    nm <- names(rvs$bgMsk)
 
-      raster::writeRaster(rvs$bgMsk, file.path(tmpdir, 'msk'), bylayer = TRUE,
+    raster::writeRaster(rvs$bgMsk, file.path(tmpdir, 'msk'), bylayer = TRUE,
                           suffix = nm, format = type, overwrite = TRUE)
-      ext <- switch(type, raster = 'grd', ascii = 'asc', GTiff = 'tif')
+    ext <- switch(type, raster = 'grd', ascii = 'asc', GTiff = 'tif')
 
-      fs <- paste0('msk_', nm, '.', ext)
-      if (ext == 'grd') {
-        fs <- c(fs, paste0('msk_', nm, '.gri'))
-      }
-      zip(zipfile="/var/log/shiny-server/dlMskEnvs.zip", files=fs)
-      system('python /opt/python/galaxy-export/export.py /var/log/shiny-server/dlMskEnvs.zip zip')
-      
-  }) 	
+    fs <- paste0('msk_', nm, '.', ext)
+    if (ext == 'grd') {
+      fs <- c(fs, paste0('msk_', nm, '.gri'))
+    }
+    zip(zipfile='dlMskEnvs.zip',flags="-FS" ,files=fs)
+    command<-paste('python /opt/python/galaxy-export/export.py','dlMskEnvs.zip','zip')
+    system(command)
+  })
   # handle download for masked predictors, with file type as user choice
   output$dlMskEnvs <- downloadHandler(
     filename = function() {'mskEnvs.zip'},
@@ -547,14 +556,21 @@ shinyServer(function(input, output, session) {
   })
   
   # download for partitioned occurrence records csv
-  observeEvent(input$dlPart_G, {
-       bg.bind <- data.frame(rep('background', nrow(rvs$bgPts)), rvs$bgPts)
-      names(bg.bind) <- c('name', 'longitude', 'latitude')
-      occs.bg.bind <-rbind(rvs$occs[,1:3], bg.bind)
-      all.bind <- cbind(occs.bg.bind, c(rvs$occsGrp, rvs$bgGrp))
-      names(all.bind)[4] <- "group"
-      write.csv(all.bind, file= "/var/log/shiny-server/_partitioned_occs.csv", row.names = FALSE)
-      system('python /opt/python/galaxy-export/export.py /var/log/shiny-server/_partitioned_occs.csv csv')
+    observeEvent(input$dlPart_G, {
+    owd <- setwd(tempdir())
+    on.exit(setwd(owd))
+  
+   filename<-gsub(" ","_",paste0(spName(), "_partitioned_occs.csv"),fixed = TRUE)
+	
+    bg.bind <- data.frame(rep('background', nrow(rvs$bgPts)), rvs$bgPts)
+    names(bg.bind) <- c('name', 'longitude', 'latitude')
+    occs.bg.bind <-rbind(rvs$occs[,1:3], bg.bind)
+    all.bind <- cbind(occs.bg.bind, c(rvs$occsGrp, rvs$bgGrp))
+    names(all.bind)[4] <- "group"
+	
+    write.csv(all.bind, file= filename, row.names = FALSE)
+    command<-paste('python /opt/python/galaxy-export/export.py',filename,'csv')
+    system(command)
   })
   # download for partitioned occurrence records csv
   output$dlPart <- downloadHandler(
@@ -749,29 +765,36 @@ shinyServer(function(input, output, session) {
   # download for model predictions (restricted to background extent)
 # download for model predictions (restricted to background extent)
   observeEvent(input$dlPred_G,{
+
+  tmpdir<-tempdir()
+  owd <- setwd(tempdir())
+  on.exit(setwd(owd))
+
   ext <- switch(input$predFileType, raster = 'grd', ascii = 'asc', GTiff = 'tif', PNG = 'png')
-  paste0(names(rvs$predCur), '.', ext)
   filename<-paste0(names(rvs$predCur), '.', ext)
-  file_path<-paste0("/var/log/shiny-server/",filename)
+
   if (input$predFileType == 'png') {
-  png(file=file_path)
+  png(file=filename)
   raster::image(rvs$predCur)
   dev.off()
-  command<-paste("python /opt/python/galaxy-export/export.py",file_path,"auto")
+  command<-paste('python /opt/python/galaxy-export/export.py',filename,'auto')
+
   }else if (input$predFileType == 'raster') {
-  fileName <- names(rvs$predCur)
-  tmpdir <- tempdir()
-  raster::writeRaster(rvs$predCur, file.path(tmpdir, fileName), format = input$predFileType, overwrite = TRUE)
-  fs <- file.path(tmpdir, paste0(fileName, c('.grd', '.gri')))
-  zip_name<-paste0("/var/log/shiny-server/",gsub(" ", "_",fileName,fixed = TRUE),".zip")
-  zip(zipfile=zip_name, files=fs, extras= '-j')
-  command<-paste("python /opt/python/galaxy-export/export.py",zip_name,"zip")
+  raster::writeRaster(rvs$predCur, file.path(tmpdir, filename), format = input$predFileType, overwrite = TRUE)
+  fs <- file.path(tmpdir, paste0(filename, c('.grd', '.gri')))
+  zip(zipfile=filename, files=fs,flags= "-FS", extras= '-j')
+  command<-paste('python /opt/python/galaxy-export/export.py',filename,'zip')
   }else {
-   r <- raster::writeRaster(rvs$predCur, file=file_path, format = input$predFileType, overwrite = TRUE)
-   command<-paste("python /opt/python/galaxy-export/export.py",file_path,"auto")
+   r <- raster::writeRaster(rvs$predCur, file=filename, format = input$predFileType, overwrite = TRUE)
+   command<-paste('python /opt/python/galaxy-export/export.py',filename,'auto')
   }
   system(command)
   })
+
+
+
+
+
   # download for model predictions (restricted to background extent)
   output$dlPred <- downloadHandler(
     filename = function() {
@@ -874,6 +897,30 @@ shinyServer(function(input, output, session) {
     rvs %>% writeLog("Reset projection extent.")
   })
   
+  
+  # download for model predictions (restricted to background extent)
+   observeEvent(input$dlProj_G,{
+      ext <- switch(input$projFileType, raster = 'grd', ascii = 'asc', GTiff = 'tif', PNG = 'png')
+      filename<- paste0(names(rvs$projCur), '.', ext)
+	  tmpdir<-tempdir()
+      owd <- setwd(tempdir())
+	  on.exit(setwd(owd))
+	  command<-paste('python /opt/python/galaxy-export/export.py',filename,'auto')
+      if (input$projFileType == 'png') {
+        png(filename)
+        raster::image(rvs$projCur)
+        dev.off()
+      } else if (input$projFileType == 'raster') {
+        raster::writeRaster(rvs$projCur, file.path(tmpdir, filename), format = input$projFileType, overwrite = TRUE)
+        fs <- file.path(tmpdir, paste0(fileName, c('.grd', '.gri')))
+        zip(zipfile=file, files=fs, extras = '-j')
+		command<-paste('python /opt/python/galaxy-export/export.py',filename,'zip')
+      } else {
+        r <- raster::writeRaster(rvs$projCur, filename, format = input$projFileType, overwrite = TRUE)
+      
+    }
+	system(command)
+})
   # download for model predictions (restricted to background extent)
   output$dlProj <- downloadHandler(
     filename = function() {
@@ -900,6 +947,70 @@ shinyServer(function(input, output, session) {
   ########################################### #
   ### MARKDOWN FUNCTIONALITY ####
   ########################################### #
+  # handler for R Markdown download in Galaxy
+  observeEvent(input$dlRMD_G,{
+    filename<-paste0("wallace-session-", Sys.Date(), ".", switch(input$rmdFileType, Rmd = 'Rmd', PDF = 'pdf', HTML = 'html', Word = 'docx') 	)
+      # convert removed occIDs to characters of vectors
+      if (!is.null(rvs$removedIDs)) {
+        rvs$occsRem <- printVecAsis(rvs$removedIDs)
+      }
+      # convert polygon coordinates to characters of vectors
+      if (!is.null(rvs$polySelXY)) {
+        polySelX <- printVecAsis(round(rvs$polySelXY[,1], digits=4))
+        polySelY <- printVecAsis(round(rvs$polySelXY[,2], digits=4))
+      } else {
+        polySelX <- polySelY <- NULL
+      }
+      if (!is.null(rvs$polyPjXY)) {
+        polyPjX <- printVecAsis(round(rvs$polyPjXY[,1], digits=4))
+        polyPjY <- printVecAsis(round(rvs$polyPjXY[,2], digits=4))
+      } else {
+        polyPjX <- polyPjY <- NULL
+      }
+      bcSels <- printVecAsis(rvs$bcSels)
+      exp <- knitr::knit_expand("Rmd/userReport.Rmd",
+                                curWD=curWD, spName=spName(),
+                                dbName=rvs$occDb, occNum=rvs$occNum, occsCSV=rvs$userCSV$name,  # comp 1
+                                thinDist=rvs$thinDist, occsRemoved=rvs$occsRem, occsSelX=polySelX, occsSelY=polySelY,  # comp 2
+                                bcRes=rvs$bcRes, bcLat=rvs$bcLat, bcLon=rvs$bcLon, # comp 3
+                                userEnvs=printVecAsis(rvs$userEnvs$name), bcSels=bcSels, # comp 3
+                                bgSel=rvs$comp4.shp, bgBuf=rvs$comp4.buf, bgUserCSVpath=rvs$userBgShp$datapath,  # comp 4
+                                bgUserCSVname=rvs$userBgShp$name, bgUserShpPath=rvs$bgUserShpPar$dsn,  # comp 4
+                                bgUserShpName=rvs$bgUserShpPar$layer, bgPtsNum=rvs$bgPtsNum, # comp 4
+                                partSel=rvs$partSel, kfolds=rvs$kfolds, aggFact=rvs$aggFact,  # comp 5
+                                enmSel=rvs$comp6, rms1=rvs$rms[1], rms2=rvs$rms[2], rmsStep=rvs$rmsStep, # comp 6
+                                fcs=printVecAsis(rvs$fcs),  # comp 6
+                                modSel=rvs$modSel, mxNonZeroCoefs=printVecAsis(rvs$mxNonZeroCoefs), envSel=rvs$envSel,  # comp 7
+                                bcPlot1=rvs$bcPlotsPar$bc1, bcPlot2=rvs$bcPlotsPar$bc2, bcPlotP=rvs$bcPlotsPar$p,  # comp 7
+                                mxEvalSel=rvs$mxEvalSel, predType=rvs$comp7.type, comp7.thresh=rvs$comp7.thr, # comp 7
+                                occsPjX=polyPjX, occsPjY=polyPjY, pjRCP=rvs$pjTimePar$rcp, pjGCM=rvs$pjTimePar$gcm,  # comp 8
+                                pjYear=rvs$pjTimePar$year, comp8.thresh=rvs$comp8.thr)  # comp 8
+      # temporarily switch to the temp dir, in case you do not have write
+      # permission to the current working directory
+      owd <- setwd(tempdir())
+      on.exit(setwd(owd))
+      writeLines(exp, filename)
+      command<-paste("python /opt/python/galaxy-export/export.py",filename,'auto')
+      if (input$rmdFileType == 'Rmd') {
+        out <- rmarkdown::render(filename, rmarkdown::md_document(variant="markdown_github"))
+        writeLines(gsub('``` r', '```{r}', readLines(out)), filename)
+        out <- filename
+        command<-paste("python /opt/python/galaxy-export/export.py",filename,'auto')
+
+      } else {
+        out <- rmarkdown::render(filename,
+                                 switch(input$rmdFileType,
+                                        PDF = rmarkdown::pdf_document(latex_engine='xelatex'),
+                                        HTML = rmarkdown::html_document(),
+                                        Word = rmarkdown::word_document())
+         )
+       
+
+      }
+      
+      system(command)
+  })
+  
   
   # handler for R Markdown download
   output$dlRMD <- downloadHandler(
@@ -953,7 +1064,6 @@ shinyServer(function(input, output, session) {
         out <- rmarkdown::render('userReport2.Rmd', rmarkdown::md_document(variant="markdown_github"))
         writeLines(gsub('``` r', '```{r}', readLines(out)), 'userReport3.Rmd')
         out <- 'userReport3.Rmd'
-        command<-paste("python /opt/python/galaxy-export/export.py",'userReport3.Rmd','auto')
 
       } else {
         out <- rmarkdown::render('userReport2.Rmd', 
@@ -962,10 +1072,8 @@ shinyServer(function(input, output, session) {
                                         HTML = rmarkdown::html_document(), 
                                         Word = rmarkdown::word_document())
          )
-         command<-paste("python /opt/python/galaxy-export/export.py",'userReport2.Rmd','auto')
         
       }
-      system(command)
       file.rename(out, file)
     }
   )
