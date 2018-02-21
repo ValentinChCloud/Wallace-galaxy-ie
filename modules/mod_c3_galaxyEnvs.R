@@ -51,8 +51,8 @@ galaxyEnvs_MOD <- function(input, output, session, rvs) {
     rvs$userEnvs <- raster
     
     withProgress(message = "Reading in rasters...", {
-      uenvs <- raster::stack(input$userEnvs$datapath)
-      names(uenvs) <- fileNameNoExt(input$userEnvs$name)
+      uenvs <- raster::stack(raster$datapath)
+      names(uenvs) <- fileNameNoExt(raster$name)
     })
     
     rvs %>% writeLog("Environmental predictors: User input.")

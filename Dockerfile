@@ -12,19 +12,24 @@ RUN echo "force-unsafe-io" > /etc/dpkg/dpkg.cfg.d/02apt-speedup && \
     # Bash script to check traffic
     mkdir -p /opt/python/galaxy-export
 
-
+RUN apt-get update && apt-get install -y texlive-xetex
 # Adapt download function to export to history Galaxy
 COPY ./ui.R /srv/shiny-server/sample-apps/SIG/wallace/shiny/ui.R
 COPY ./server.R /srv/shiny-server/sample-apps/SIG/wallace/shiny/server.R
 # Component 1
-COPY ./gtext_comp1_galaxyOccs.Rmd /srv/shiny-server/sample-apps/SIG/wallace/shiny/Rmd/gtext_comp1_galaxyOccs.Rmd
-COPY ./mod_c1_galaxyOccs.R /srv/shiny-server/sample-apps/SIG/wallace/shiny/modules/mod_c1_galaxyOccs.R
+COPY ./Rmd/gtext_comp1_galaxyOccs.Rmd /srv/shiny-server/sample-apps/SIG/wallace/shiny/Rmd/gtext_comp1_galaxyOccs.Rmd
+COPY ./modules/mod_c1_galaxyOccs.R /srv/shiny-server/sample-apps/SIG/wallace/shiny/modules/mod_c1_galaxyOccs.R
 
 # Component 3
-COPY ./gtext_comp3_galaxyEnvs.Rmd /srv/shiny-server/sample-apps/SIG/wallace/shiny/Rmd/gtext_comp3_galaxyEnvs.Rmd
-COPY ./mod_c3_galaxyEnvs.R /srv/shiny-server/sample-apps/SIG/wallace/shiny/modules/mod_c3_galaxyEnvs.R
-
-
+COPY ./Rmd/gtext_comp3_galaxyEnvs.Rmd /srv/shiny-server/sample-apps/SIG/wallace/shiny/Rmd/gtext_comp3_galaxyEnvs.Rmd
+COPY ./modules/mod_c3_galaxyEnvs.R /srv/shiny-server/sample-apps/SIG/wallace/shiny/modules/mod_c3_galaxyEnvs.R
+# Component 4
+COPY ./modules/mod_c4_galaxyBgExtend.R /srv/shiny-server/sample-apps/SIG/wallace/shiny/modules/mod_c4_galaxyBgExtend.R
+COPY ./Rmd/gtext_comp4_galaxyBg.Rmd /srv/shiny-server/sample-apps/SIG/wallace/shiny/Rmd/gtext_comp4_galaxyBg.Rmd
+#Component 7
+COPY ./modules/mod_c7_bcPlots.R /srv/shiny-server/sample-apps/SIG/wallace/shiny/modules/mod_c7_bcPlots.R
+COPY ./modules/mod_c7_mxEvalPlots.R /srv/shiny-server/sample-apps/SIG/wallace/shiny/modules/mod_c7_mxEvalPlots.R
+COPY ./modules/mod_c7_resPlots.R /srv/shiny-server/sample-apps/SIG/wallace/shiny/modules/mod_c7_resPlots.R
 # Bash script to lauch all process needed
 COPY shiny-server.sh /usr/bin/shiny-server.sh
 # Python script to export data to history Galaxy
