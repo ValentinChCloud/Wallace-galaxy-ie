@@ -3,9 +3,11 @@ FROM valentinchdock/docker-wallace:1.0.4
 
 RUN echo "force-unsafe-io" > /etc/dpkg/dpkg.cfg.d/02apt-speedup && \
     echo "Acquire::http {No-Cache=True;};" > /etc/apt/apt.conf.d/no-cache && \
-    apt-get -qq update && apt-get install --no-install-recommends -y python-pip  python-dev && \
-    pip install --upgrade pip && \
-    pip install -U setuptools && \
+    apt-get -qq update && apt-get install --no-install-recommends -y python-pip  python-dev
+
+RUN pip install --upgrade pip 
+
+RUN pip install -U setuptools && \
     pip install bioblend galaxy-ie-helpers && \
     Rscript -e "install.packages('rPython')" && \
     # Installing R package dedicated to the shniy app
