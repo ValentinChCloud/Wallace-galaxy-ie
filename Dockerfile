@@ -1,4 +1,4 @@
-FROM wallace-doc:dev
+FROM valentinchdock/wallaceecomod:1.0.5
 # Installing packages needed for check traffic on the container and kill if none
 
 RUN echo "force-unsafe-io" > /etc/dpkg/dpkg.cfg.d/02apt-speedup && \
